@@ -111,7 +111,7 @@ body.hov #cring{width:50px;height:50px;border-color:rgba(0,212,255,.55)}
   transition:opacity .7s var(--ease),visibility .7s;
 }
 #loader.gone{opacity:0;visibility:hidden;pointer-events:none}
-.ld-logo{width:55px;height:55px;object-fit:contain;display:flex;align-items:center;gap:10px;animation:ld-glow 1.8s ease-in-out infinite}
+.ld-logo{width:80px;height:80px;object-fit:contain;animation:ld-glow 1.8s ease-in-out infinite}
 @keyframes ld-glow{
   0%,100%{filter:drop-shadow(0 0 10px rgba(200,168,75,.3))}
   50%{filter:drop-shadow(0 0 30px rgba(200,168,75,.75)) drop-shadow(0 0 60px rgba(0,212,255,.2))}
@@ -144,8 +144,8 @@ body.hov #cring{width:50px;height:50px;border-color:rgba(0,212,255,.55)}
   border-bottom:1px solid var(--gb);transition:all .4s var(--ease);
 }
 #nav.up{height:62px;background:rgba(4,4,10,.97)}
-.n-logo{display:flex;align-items:center;gap:12px}
-.n-logo img{height:42px;width:42px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(200,168,75,.4))}
+.n-logo{display:flex;align-items:center;gap:10px}
+.n-logo img{height:55px;width:55px;object-fit:contain;display:block;filter:drop-shadow(0 0 12px rgba(200,168,75,.4))}
 .n-brand{
   font-family:var(--fh);font-size:18px;font-weight:800;
   background:var(--gg);background-size:200%;
