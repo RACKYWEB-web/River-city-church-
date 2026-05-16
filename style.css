@@ -111,7 +111,7 @@ body.hov #cring{width:50px;height:50px;border-color:rgba(0,212,255,.55)}
   transition:opacity .7s var(--ease),visibility .7s;
 }
 #loader.gone{opacity:0;visibility:hidden;pointer-events:none}
-.ld-logo{width:80px;height:80px;object-fit:contain;animation:ld-glow 1.8s ease-in-out infinite}
+.ld-logo{width:55px;height:55px;object-fit:contain;display:flex;align-items:center;gap:10px;animation:ld-glow 1.8s ease-in-out infinite}
 @keyframes ld-glow{
   0%,100%{filter:drop-shadow(0 0 10px rgba(200,168,75,.3))}
   50%{filter:drop-shadow(0 0 30px rgba(200,168,75,.75)) drop-shadow(0 0 60px rgba(0,212,255,.2))}
