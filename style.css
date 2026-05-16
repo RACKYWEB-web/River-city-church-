@@ -461,7 +461,7 @@ section{position:relative;overflow:hidden}
 @keyframes fu{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 .hero-h{
   font-family:var(--fh);font-size:clamp(46px,7vw,88px);
-  font-weight:900;line-height:.96;letter-spacing:-.04em;
+  font-weight:900;line-height:1.05;letter-spacing:-.04em;
   color:var(--tw);margin-bottom:24px;animation:fu 1s .12s ease both;
 }
 .hero-h .hl{
@@ -1001,3 +1001,32 @@ textarea.f-inp2{resize:none;height:120px}
 
 /* ── LESSON NOTES ──────────────────────────────────────── */
 #lesson-notes { background: var(--b0); }
+@media(max-width:768px){
+
+.hero-grid{
+   grid-template-columns:1fr;
+   gap:40px;
+}
+
+.hero-h{
+   font-size:42px;
+   line-height:1.05;
+   word-break:break-word;
+   overflow-wrap:break-word;
+}
+
+.hero-p{
+   max-width:100%;
+   font-size:15px;
+   line-height:1.7;
+}
+
+.hero-actions{
+   width:100%;
+}
+
+.hero-trust{
+   gap:12px;
+}
+
+}
