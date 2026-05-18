@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In · Rackyweb Nexus</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+body { cursor: default; display: flex; flex-direction: column; min-height: 100vh; }
+#cdot, #cring { display: none; }
+
+/* ── Page layout ── */
+.auth-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* ── Left panel ── */
+.auth-left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 64px;
+  background:
+    linear-gradient(145deg, rgba(4,4,10,.88) 0%, rgba(7,7,24,.92) 100%),
+    url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1400&q=85')
+    center / cover no-repeat;
+  border-right: 1px solid var(--gb);
+}
+.auth-left-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+.auth-left-logo img {
+  width: 44px; height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(200,168,75,.5));
+}
+.auth-left-brand {
+  font-family: var(--fh);
+  font-size: 20px;
+  font-weight: 800;
+  background: var(--gg);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 5s linear infinite;
+}
+.auth-left-brand span {
+  display: block;
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--neo);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  -webkit-text-fill-color: var(--neo);
+  margin-top: 2px;
+}
+.auth-left-h {
+  font-family: var(--fh);
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  color: var(--tw);
+  margin-bottom: 18px;
+}
+.auth-left-sub {
+  font-size: 16px;
+  color: rgba(240,238,232,.6);
+  line-height: 1.75;
+  margin-bottom: 44px;
+  max-width: 380px;
+}
+.auth-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-perk {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.auth-perk-ico {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--gd);
+  border: 1px solid var(--gb);
+  display: flex; align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.auth-perk-text {
+  font-size: 14px;
+  color: rgba(240,238,232,.7);
+  line-height: 1.5;
+}
+.auth-perk-text strong { color: var(--tw); }
+
+/* ── Right panel ── */
+.auth-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  background: var(--b1);
+  overflow-y: auto;
+}
+.auth-form-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Form sections ── */
+.auth-section { display: none; }
+.auth-section.active {
+  display: block;
+  animation: stepIn .35s var(--ease);
+}
+
+/* ── Tabs ── */
+.auth-tab-row {
+  display: flex;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.auth-tab-btn {
+  flex: 1; padding: 10px;
+  border-radius: 7px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tm);
+  cursor: pointer;
+  transition: all .25s;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.auth-tab-btn.on {
+  background: var(--gd);
+  color: var(--g2);
+  border-color: var(--gb);
+}
+
+/* ── Social row ── */
+.social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.social-btn {
+  display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+  padding: 11px; border-radius: 8px;
+  background: var(--p);
+  border: 1px solid var(--bd);
+  color: var(--tw2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .25s;
+}
+.social-btn:hover {
+  border-color: var(--gb);
+  background: var(--gd);
+  color: var(--tw);
+}
+
+/* ── Divider with text ── */
+.or-divider {
+  display: flex; align-items: center;
+  gap: 12px; margin-bottom: 20px;
+}
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: var(--bd);
+}
+.or-divider span {
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--tm);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Form fields ── */
+.field-wrap { margin-bottom: 16px; }
+.field-wrap label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tm);
+  margin-bottom: 7px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.field-wrap .field-inner { position: relative; }
+.field-wrap input,
+.field-wrap select {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,.04);
+  border: 1.5px solid var(--bd);
+  border-radius: 9px;
+  color: var(--tw);
+  font-family: var(--fs);
+  font-size: 14px;
+  outline: none;
+  transition: border .25s, background .25s;
+}
+.field-wrap input:focus,
+.field-wrap select:focus {
+  border-color: var(--gb);
+  background: rgba(200,168,75,.04);
+}
+.field-wrap input::placeholder { color: var(--tm); }
+.field-eye {
+  position: absolute;
+  right: 13px; top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--tm);
+  user-select: none;
+}
+.field-eye:hover { color: var(--g1); }
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Password strength ── */
+.pass-strength-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bd);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.pass-strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all .3s;
+}
+.pass-strength-lbl {
+  font-family: var(--fm);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+/* ── Checkbox ── */
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.check-row input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--g1);
+  flex-shrink: 0;
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+}
+.check-row label {
+  font-size: 12px;
+  color: var(--tm);
+  line-height: 1.55;
+  cursor: pointer;
+}
+.check-row a { color: var(--g2); }
+
+/* ── Submit button ── */
+.auth-submit {
+  width: 100%;
+  padding: 14px;
+  border-radius: 9px;
+  border: none;
+  background: var(--gs);
+  color: #04020a;
+  font-family: var(--fh);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .3s;
+  box-shadow: 0 0 22px rgba(200,168,75,.22);
+}
+.auth-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(200,168,75,.44);
+}
+
+/* ── OTP boxes ── */
+.otp-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 24px 0;
+}
+.otp-inp {
+  width: 52px; height: 60px;
+  text-align: center;
+  font-family: var(--fh);
+  font-size: 26px;
+  font-weight: 900;
+  background: rgba(255,255,255,.04);
+  border: 2px solid var(--bd);
+  border-radius: 10px;
+  color: var(--tw);
+  outline: none;
+  transition: border .2s;
+}
+.otp-inp:focus { border-color: var(--gb); }
+
+/* ── Misc ── */
+.auth-link { color: var(--g2); cursor: pointer; font-weight: 600; }
+.auth-link:hover { text-decoration: underline; }
+.error-msg {
+  display: none;
+  padding: 10px 14px;
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.2);
+  border-radius: 7px;
+  font-size: 12px;
+  color: #f87171;
+  margin-bottom: 14px;
+}
+.success-circle {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,rgba(200,168,75,.2),rgba(16,185,129,.15));
+  border: 2px solid var(--gb);
+  display: flex; align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+}
+.resend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--tm);
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-left  { display: none; }
+  .auth-right { padding: 80px 24px 40px; }
+}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+<div id="mglow"></div>
+
+<!-- Minimal nav -->
+<nav id="nav" style="height:64px;padding:0 32px">
+  <a href="../index.html" class="n-logo">
+    <img src="../img/logo.png" alt="Rackyweb Nexus">
+    <div class="n-brand">Rackyweb Nexus<span>The Future of Digital Innovation</span></div>
+  </a>
+  <div class="n-right">
+    <a href="../index.html" class="btn btn-gl btn-sm" style="text-decoration:none">← Back to Platform</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+
+  <!-- ── LEFT: Branding panel ── -->
+  <div class="auth-left">
+    <div class="orb" style="width:400px;height:400px;background:rgba(200,168,75,.07);top:-60px;left:-80px;animation-duration:14s"></div>
+    <div class="orb" style="width:300px;height:300px;background:rgba(0,212,255,.06);bottom:-40px;right:-60px;animation-duration:10s"></div>
+
+    <div class="auth-left-logo">
+      <img src="../img/logo.png" alt="Rackyweb Nexus">
+      <div class="auth-left-brand">Rackyweb Nexus<span>The Future of Digital Innovation</span></div>
+    </div>
+
+    <h1 class="auth-left-h">Your Gateway to<br><span class="tg">Global Innovation</span></h1>
+    <p class="auth-left-sub">Join 48,000+ developers, designers, founders, and creators building the future of the digital economy.</p>
+
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-ico">🛒</div>
+        <div class="auth-perk-text"><strong>Premium Marketplace</strong> — 2,400+ digital assets from world-class creators</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-ico">🎓</div>
+        <div class="auth-perk-text"><strong>Digital Academy</strong> — 120+ expert-led courses with verified certificates</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-ico">🤖</div>
+        <div class="auth-perk-text"><strong>NexusAI Tools</strong> — Business plans, pitch decks, and market intelligence</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-ico">🚀</div>
+        <div class="auth-perk-text"><strong>Startup Hub</strong> — Connect with investors, mentors, and co-founders</div>
+      </div>
+    </div>
+
+    <!-- Social proof -->
+    <div style="margin-top:44px;padding-top:28px;border-top:1px solid rgba(200,168,75,.15)">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="display:flex">
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid var(--b1);background:rgba(200,168,75,.15);display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:-8px">👩</div>
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid var(--b1);background:rgba(0,212,255,.12);display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:-8px">👨</div>
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid var(--b1);background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;font-size:14px;margin-right:-8px">👩</div>
+          <div style="width:32px;height:32px;border-radius:50%;border:2px solid var(--b1);background:rgba(200,168,75,.12);display:flex;align-items:center;justify-content:center;font-size:12px">+48K</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tw)">48,000+ members</div>
+          <div style="font-size:12px;color:var(--tm)">from 190+ countries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: Form panel ── -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+
+      <!-- Tab row -->
+      <div class="auth-tab-row rv">
+        <div class="auth-tab-btn on" id="tab-signin" onclick="switchSection('signin',this)">Sign In</div>
+        <div class="auth-tab-btn" id="tab-register" onclick="switchSection('register',this)">Create Account</div>
+      </div>
+
+      <!-- ── SIGN IN SECTION ── -->
+      <div id="sec-signin" class="auth-section active">
+        <div style="margin-bottom:22px">
+          <div style="font-family:var(--fh);font-size:22px;font-weight:800;color:var(--tw);margin-bottom:4px">Welcome back 👋</div>
+          <div style="font-size:13px;color:var(--tm)">Sign in to access your dashboard, courses, and marketplace.</div>
+        </div>
+
+        <!-- Social -->
+        <div class="social-row">
+          <button class="social-btn" onclick="pageSocialAuth('Google')">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 12 4.9c1.76 0 3.35.63 4.59 1.67l3.41-3.41A12 12 0 0 0 0 12c0 1.99.49 3.86 1.35 5.51l3.92-3.05a7.08 7.08 0 0 1 0-4.7z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.68-2.85A7.13 7.13 0 0 1 12 19.1a7.08 7.08 0 0 1-6.71-4.84L1.36 17.5A12 12 0 0 0 12 24z"/><path fill="#4A90D9" d="M23.74 12.27c0-.81-.07-1.59-.19-2.35H12v4.45h6.6a5.64 5.64 0 0 1-2.44 3.7l3.68 2.85c2.15-1.99 3.4-4.92 3.4-8.65z"/><path fill="#FBBC05" d="M5.29 14.26A7.08 7.08 0 0 1 4.9 12c0-.79.14-1.56.39-2.27L1.37 6.67A12 12 0 0 0 0 12c0 1.93.46 3.75 1.36 5.34l3.93-3.08z"/></svg>
+            Continue with Google
+          </button>
+          <button class="social-btn" onclick="pageSocialAuth('GitHub')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.73-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.8 1.3 3.48.99.1-.77.41-1.3.75-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>
+            Continue with GitHub
+          </button>
+        </div>
+        <div class="or-divider"><span>or continue with email</span></div>
+
+        <div id="signin-error" class="error-msg"></div>
+
+        <div class="field-wrap">
+          <label>Email Address</label>
+          <input id="pg-si-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="field-wrap">
+          <label>
+            <span>Password</span>
+            <span style="float:right;font-weight:400;text-transform:none;letter-spacing:0">
+              <span class="auth-link" onclick="switchSection('forgot')">Forgot password?</span>
+            </span>
+          </label>
+          <div class="field-inner">
+            <input id="pg-si-pass" type="password" placeholder="••••••••">
+            <span class="field-eye" onclick="pgTogglePass('pg-si-pass',this)">👁</span>
+          </div>
+        </div>
+        <div class="check-row" style="margin-bottom:20px">
+          <input type="checkbox" id="remember-me">
+          <label for="remember-me">Remember me for 30 days</label>
+        </div>
+        <button class="auth-submit" onclick="pgSignIn()">Sign In to Rackyweb Nexus →</button>
+
+        <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--tm)">
+          No account? <span class="auth-link" onclick="switchSection('register',document.getElementById('tab-register'))">Create one free →</span>
+        </div>
+      </div>
+
+      <!-- ── REGISTER SECTION ── -->
+      <div id="sec-register" class="auth-section">
+        <div style="margin-bottom:22px">
+          <div style="font-family:var(--fh);font-size:22px;font-weight:800;color:var(--tw);margin-bottom:4px">Create your account ✨</div>
+          <div style="font-size:13px;color:var(--tm)">Free to join. Upgrade anytime. Access everything in one ecosystem.</div>
+        </div>
+
+        <div class="social-row">
+          <button class="social-btn" onclick="pageSocialAuth('Google')">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 12 4.9c1.76 0 3.35.63 4.59 1.67l3.41-3.41A12 12 0 0 0 0 12c0 1.99.49 3.86 1.35 5.51l3.92-3.05a7.08 7.08 0 0 1 0-4.7z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.91l-3.68-2.85A7.13 7.13 0 0 1 12 19.1a7.08 7.08 0 0 1-6.71-4.84L1.36 17.5A12 12 0 0 0 12 24z"/><path fill="#4A90D9" d="M23.74 12.27c0-.81-.07-1.59-.19-2.35H12v4.45h6.6a5.64 5.64 0 0 1-2.44 3.7l3.68 2.85c2.15-1.99 3.4-4.92 3.4-8.65z"/><path fill="#FBBC05" d="M5.29 14.26A7.08 7.08 0 0 1 4.9 12c0-.79.14-1.56.39-2.27L1.37 6.67A12 12 0 0 0 0 12c0 1.93.46 3.75 1.36 5.34l3.93-3.08z"/></svg>
+            Sign up with Google
+          </button>
+          <button class="social-btn" onclick="pageSocialAuth('GitHub')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.73-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.8 1.3 3.48.99.1-.77.41-1.3.75-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>
+            Sign up with GitHub
+          </button>
+        </div>
+        <div class="or-divider"><span>or fill in your details</span></div>
+
+        <div id="register-error" class="error-msg"></div>
+
+        <div class="name-row">
+          <div class="field-wrap"><label>First Name</label><input id="pg-reg-fn" type="text" placeholder="Alex"></div>
+          <div class="field-wrap"><label>Last Name</label><input id="pg-reg-ln" type="text" placeholder="Johnson"></div>
+        </div>
+        <div class="field-wrap">
+          <label>Email Address</label>
+          <input id="pg-reg-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="field-wrap">
+          <label>Password</label>
+          <div class="field-inner">
+            <input id="pg-reg-pass" type="password" placeholder="Minimum 8 characters" oninput="pgPassStrength(this.value)">
+            <span class="field-eye" onclick="pgTogglePass('pg-reg-pass',this)">👁</span>
+          </div>
+          <div class="pass-strength-bar"><div id="pg-pass-bar" class="pass-strength-fill"></div></div>
+          <div id="pg-pass-lbl" class="pass-strength-lbl"></div>
+        </div>
+        <div class="field-wrap">
+          <label>I am a…</label>
+          <select id="pg-reg-role">
+            <option value="">Select your role</option>
+            <option>Student / Learner</option>
+            <option>Developer / Engineer</option>
+            <option>Designer</option>
+            <option>Entrepreneur / Founder</option>
+            <option>Digital Creator / Seller</option>
+            <option>Investor</option>
+            <option>Corporate / Enterprise</option>
+          </select>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="pg-terms">
+          <label for="pg-terms">I agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></label>
+        </div>
+        <button class="auth-submit" onclick="pgRegister()">Create Account &amp; Verify →</button>
+
+        <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--tm)">
+          Already have an account? <span class="auth-link" onclick="switchSection('signin',document.getElementById('tab-signin'))">Sign in →</span>
+        </div>
+      </div>
+
+      <!-- ── OTP SECTION ── -->
+      <div id="sec-otp" class="auth-section">
+        <div style="text-align:center;margin-bottom:8px">
+          <div style="font-size:44px;margin-bottom:14px">📧</div>
+          <div style="font-family:var(--fh);font-size:22px;font-weight:800;color:var(--tw);margin-bottom:6px">Verify Your Email</div>
+          <div style="font-size:13px;color:var(--tm);line-height:1.7">
+            We sent a <strong style="color:var(--g2)">6-digit code</strong> to<br>
+            <span id="pg-otp-email" style="color:var(--tw);font-weight:600"></span>
+          </div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--tm);margin-top:6px;padding:6px 12px;background:var(--gd);border:1px solid var(--gb);border-radius:6px;display:inline-block;margin-top:10px">💡 Demo: use code <strong style="color:var(--g2)">123456</strong></div>
+        </div>
+
+        <div id="otp-pg-error" class="error-msg" style="margin-top:14px"></div>
+
+        <div class="otp-row">
+          <input type="text" maxlength="1" class="otp-inp" id="p0" oninput="pgOtpNext(this,0)" onkeydown="pgOtpBack(event,0)">
+          <input type="text" maxlength="1" class="otp-inp" id="p1" oninput="pgOtpNext(this,1)" onkeydown="pgOtpBack(event,1)">
+          <input type="text" maxlength="1" class="otp-inp" id="p2" oninput="pgOtpNext(this,2)" onkeydown="pgOtpBack(event,2)">
+          <input type="text" maxlength="1" class="otp-inp" id="p3" oninput="pgOtpNext(this,3)" onkeydown="pgOtpBack(event,3)">
+          <input type="text" maxlength="1" class="otp-inp" id="p4" oninput="pgOtpNext(this,4)" onkeydown="pgOtpBack(event,4)">
+          <input type="text" maxlength="1" class="otp-inp" id="p5" oninput="pgOtpNext(this,5)" onkeydown="pgOtpBack(event,5)">
+        </div>
+
+        <button class="auth-submit" onclick="pgVerifyOTP()">Verify &amp; Access Platform →</button>
+
+        <div class="resend-row">
+          <span>Didn't receive it?</span>
+          <span id="pg-resend-btn" class="auth-link" onclick="pgResendOTP()">Resend Code</span>
+          <span id="pg-resend-timer" style="display:none;font-family:var(--fm);font-size:11px">(resend in <span id="pg-resend-count">60</span>s)</span>
+        </div>
+        <div style="text-align:center;margin-top:10px">
+          <span class="auth-link" style="font-size:12px;color:var(--tm)" onclick="switchSection('register')">← Change email</span>
+        </div>
+      </div>
+
+      <!-- ── FORGOT PASSWORD SECTION ── -->
+      <div id="sec-forgot" class="auth-section">
+        <div style="text-align:center;margin-bottom:26px">
+          <div style="font-size:40px;margin-bottom:12px">🔑</div>
+          <div style="font-family:var(--fh);font-size:22px;font-weight:800;color:var(--tw);margin-bottom:6px">Reset Your Password</div>
+          <div style="font-size:13px;color:var(--tm);line-height:1.6">Enter your email and we'll send you a secure reset link valid for 15 minutes.</div>
+        </div>
+        <div class="field-wrap">
+          <label>Email Address</label>
+          <input id="pg-forgot-email" type="email" placeholder="you@example.com">
+        </div>
+        <button class="auth-submit" onclick="pgForgot()">Send Reset Link →</button>
+        <div style="text-align:center;margin-top:16px">
+          <span class="auth-link" style="font-size:13px;color:var(--tm)" onclick="switchSection('signin',document.getElementById('tab-signin'))">← Back to Sign In</span>
+        </div>
+      </div>
+
+      <!-- ── SUCCESS SECTION ── -->
+      <div id="sec-success" class="auth-section" style="text-align:center;padding:20px 0">
+        <div class="success-circle">🎉</div>
+        <div style="font-family:var(--fh);font-size:24px;font-weight:800;color:var(--tw);margin-bottom:8px" id="pg-success-title">You're In!</div>
+        <div style="font-size:14px;color:var(--tm);line-height:1.7;margin-bottom:28px" id="pg-success-msg">Welcome to Rackyweb Nexus. Your account is ready.</div>
+        <a href="../index.html" class="auth-submit" style="display:block;text-decoration:none;text-align:center">Start Exploring the Platform →</a>
+        <div style="margin-top:14px;font-size:12px;color:var(--tm)">You'll be redirected in <span id="redirect-count">5</span>s</div>
+      </div>
+
+    </div><!-- /auth-form-wrap -->
+  </div><!-- /auth-right -->
+</div><!-- /auth-page -->
+
+<script src="../js/app.js"></script>
+<script>
+/* ── Page-specific auth logic ── */
+let pgOtp = '';
+let pgPendingUser = null;
+let pgResendInterval = null;
+
+function switchSection(id, tabBtn) {
+  document.querySelectorAll('.auth-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + id)?.classList.add('active');
+  // Update tabs
+  if (tabBtn) {
+    document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('on'));
+    tabBtn.classList.add('on');
+  }
+  // Hide both tabs for otp/forgot/success
+  const hideTabs = ['otp','forgot','success'].includes(id);
+  document.querySelector('.auth-tab-row').style.display = hideTabs ? 'none' : 'flex';
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.style.display = 'block'; el.textContent = msg; }
+}
+function hideErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+function pgTogglePass(id, btn) {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function pgPassStrength(val) {
+  const bar = document.getElementById('pg-pass-bar');
+  const lbl = document.getElementById('pg-pass-lbl');
+  if (!bar || !lbl) return;
+  const score = [val.length>=8, /[A-Z]/.test(val), /[0-9]/.test(val), /[^A-Za-z0-9]/.test(val)].filter(Boolean).length;
+  const cols  = ['','#ef4444','#f59e0b','#3b82f6','#10b981'];
+  const lbls  = ['','Weak','Fair','Good','Strong ✓'];
+  bar.style.width  = (score*25)+'%';
+  bar.style.background = cols[score] || '';
+  lbl.textContent = val ? lbls[score] : '';
+  lbl.style.color = cols[score] || '';
+}
+
+function pgSignIn() {
+  const email = document.getElementById('pg-si-email')?.value?.trim();
+  const pass  = document.getElementById('pg-si-pass')?.value;
+  hideErr('signin-error');
+  if (!email || !email.includes('@')) { showErr('signin-error','Please enter a valid email address.'); return; }
+  if (!pass || pass.length < 6)       { showErr('signin-error','Please enter your password.'); return; }
+  document.querySelector('#sec-signin .auth-submit').textContent = 'Signing in…';
+  setTimeout(() => {
+    const user = { name:'Alex Johnson', email };
+    localStorage.setItem('nx-user', JSON.stringify(user));
+    document.getElementById('pg-success-title').textContent = 'Welcome back! 🎉';
+    document.getElementById('pg-success-msg').textContent = `Signed in as ${email}. Redirecting to the platform…`;
+    switchSection('success');
+    startRedirect();
+  }, 900);
+}
+
+function pgRegister() {
+  const fn    = document.getElementById('pg-reg-fn')?.value?.trim();
+  const ln    = document.getElementById('pg-reg-ln')?.value?.trim();
+  const email = document.getElementById('pg-reg-email')?.value?.trim();
+  const pass  = document.getElementById('pg-reg-pass')?.value;
+  const role  = document.getElementById('pg-reg-role')?.value;
+  const terms = document.getElementById('pg-terms')?.checked;
+  hideErr('register-error');
+  if (!fn || !ln)                       { showErr('register-error','Please enter your full name.'); return; }
+  if (!email || !email.includes('@'))   { showErr('register-error','Please enter a valid email address.'); return; }
+  if (!pass || pass.length < 8)         { showErr('register-error','Password must be at least 8 characters.'); return; }
+  if (!role)                             { showErr('register-error','Please select your role.'); return; }
+  if (!terms)                            { showErr('register-error','Please accept the Terms of Service to continue.'); return; }
+  pgPendingUser = { name:`${fn} ${ln}`, email, role };
+  pgOtp = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log(`%c🔐 OTP (demo): ${pgOtp}`, 'color:#c8a84b;font-size:18px;font-weight:bold;');
+  document.getElementById('pg-otp-email').textContent = email;
+  switchSection('otp');
+  pgStartResend();
+  setTimeout(() => document.getElementById('p0')?.focus(), 200);
+}
+
+function pgForgot() {
+  const email = document.getElementById('pg-forgot-email')?.value?.trim();
+  if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+  document.getElementById('pg-success-title').textContent = '📬 Reset Link Sent!';
+  document.getElementById('pg-success-msg').textContent = `A password reset link has been sent to ${email}. It expires in 15 minutes.`;
+  switchSection('success');
+}
+
+function pageSocialAuth(provider) {
+  document.getElementById('pg-success-title').textContent = 'Connected! 🎉';
+  document.getElementById('pg-success-msg').textContent = `Signed in with ${provider}. Welcome to Rackyweb Nexus!`;
+  localStorage.setItem('nx-user', JSON.stringify({name:'Alex Johnson',email:'alex@example.com',provider}));
+  switchSection('success');
+  startRedirect();
+}
+
+function pgOtpNext(el, idx) {
+  el.value = el.value.replace(/\D/g,'');
+  if (el.value && idx < 5) document.getElementById('p'+(idx+1))?.focus();
+  // Auto-verify when all filled
+  const code = [0,1,2,3,4,5].map(i=>document.getElementById('p'+i)?.value||'').join('');
+  if (code.length === 6) setTimeout(pgVerifyOTP, 200);
+}
+function pgOtpBack(e, idx) {
+  if (e.key === 'Backspace' && !e.target.value && idx > 0) document.getElementById('p'+(idx-1))?.focus();
+}
+
+function pgVerifyOTP() {
+  const code = [0,1,2,3,4,5].map(i=>document.getElementById('p'+i)?.value||'').join('');
+  const errEl = document.getElementById('otp-pg-error');
+  hideErr('otp-pg-error');
+  if (code.length < 6) { showErr('otp-pg-error','Please enter all 6 digits.'); return; }
+  if (code === pgOtp || code === '123456') {
+    if (pgPendingUser) localStorage.setItem('nx-user', JSON.stringify(pgPendingUser));
+    document.getElementById('pg-success-title').textContent = `Welcome, ${pgPendingUser?.name?.split(' ')[0] || 'Member'}! 🎉`;
+    document.getElementById('pg-success-msg').textContent = 'Your email is verified. You have full access to Rackyweb Nexus.';
+    switchSection('success');
+    startRedirect();
+  } else {
+    showErr('otp-pg-error','Incorrect code. Try again or use demo code: 123456');
+    [0,1,2,3,4,5].forEach(i=>{
+      const b = document.getElementById('p'+i);
+      if(b){ b.value=''; b.style.borderColor='rgba(239,68,68,.6)'; setTimeout(()=>b.style.borderColor='var(--bd)',1500); }
+    });
+    document.getElementById('p0')?.focus();
+  }
+}
+
+function pgResendOTP() {
+  pgOtp = Math.floor(100000+Math.random()*900000).toString();
+  console.log(`%c🔐 New OTP: ${pgOtp}`,'color:#c8a84b;font-size:18px;font-weight:bold;');
+  [0,1,2,3,4,5].forEach(i=>{ const b=document.getElementById('p'+i); if(b) b.value=''; });
+  document.getElementById('p0')?.focus();
+  pgStartResend();
+}
+
+function pgStartResend() {
+  const btn   = document.getElementById('pg-resend-btn');
+  const timer = document.getElementById('pg-resend-timer');
+  const count = document.getElementById('pg-resend-count');
+  if (!btn || !timer || !count) return;
+  btn.style.display = 'none'; timer.style.display='inline';
+  let s = 60; count.textContent = s;
+  clearInterval(pgResendInterval);
+  pgResendInterval = setInterval(()=>{ s--; count.textContent=s; if(s<=0){clearInterval(pgResendInterval);btn.style.display='inline';timer.style.display='none';} },1000);
+}
+
+function startRedirect() {
+  let s = 5;
+  const el = document.getElementById('redirect-count');
+  const t = setInterval(()=>{ s--; if(el) el.textContent=s; if(s<=0){ clearInterval(t); window.location.href='../index.html'; } },1000);
+}
+
+// Keyboard: submit on Enter
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const active = document.querySelector('.auth-section.active')?.id;
+  if (active==='sec-signin')   pgSignIn();
+  if (active==='sec-register') pgRegister();
+  if (active==='sec-forgot')   pgForgot();
+  if (active==='sec-otp')      pgVerifyOTP();
+});
+</script>
+</body>
+</html>
